@@ -34,8 +34,17 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     var swipeController: SwipeController!
     var isPreviouslySelected = false
     
-    weak var collectionView: UICollectionView?
-    
+    public weak var collectionView: UICollectionView? {
+        didSet {
+            guard let collectionView = collectionView else { return }
+
+            swipeController.scrollView = scrollView
+            
+            collectionView.panGestureRecognizer.removeTarget(self, action: nil)
+            collectionView.panGestureRecognizer.addTarget(self, action: #selector(handleCollectionPan(gesture:)))
+            return
+        }
+    }
     /// :nodoc:
     open override var frame: CGRect {
         set { super.frame = state.isActive ? CGRect(origin: CGPoint(x: frame.minX, y: newValue.minY), size: newValue.size) : newValue }
